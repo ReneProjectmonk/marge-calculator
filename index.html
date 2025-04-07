@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -25,6 +24,9 @@
       margin-top: 1rem;
       font-weight: bold;
     }
+    ul {
+      padding-left: 1.2rem;
+    }
     button {
       margin-top: 1rem;
       padding: 0.75rem;
@@ -34,7 +36,7 @@
 </head>
 <body>
   <h1>Marge Calculator (excl. btw)</h1>
-  <p>Vul de velden in om de netto marge (excl. btw) in euro en procent te berekenen.</p>
+  <p>Vul de velden in om een gedetailleerde berekening te zien van de netto marge en kostenstructuur.</p>
 
   <label for="verkoop">Verkoopprijs product (€)</label>
   <input type="number" id="verkoop" step="0.01">
@@ -54,7 +56,7 @@
   <label for="importKosten">Importkosten product (€)</label>
   <input type="number" id="importKosten" step="0.01">
 
-  <label for="fee">Fee percentage over verkoop + verzending (%)</label>
+  <label for="fee">Fee percentage over verkoop + verzending (incl. btw) (%)</label>
   <input type="number" id="fee" step="0.01">
 
   <label for="korting">Korting op inkoopprijs (%)</label>
@@ -77,16 +79,32 @@
 
       const totaalVerkoopIncl = verkoop + verzendVerkoop;
       const totaalVerkoopExcl = totaalVerkoopIncl / (1 + (btwPerc / 100));
+      const btwBedrag = totaalVerkoopIncl - totaalVerkoopExcl;
+
       const kortingBedrag = inkoop * (korting / 100);
       const inkoopNaKorting = inkoop - kortingBedrag;
-      const fee = totaalVerkoopExcl * (feePerc / 100);
+
+      const fee = totaalVerkoopIncl * (feePerc / 100);
+
       const totaleKosten = inkoopNaKorting + verzendInkoop + importKosten + fee;
       const nettoWinst = totaalVerkoopExcl - totaleKosten;
       const margePercent = (nettoWinst / totaalVerkoopExcl) * 100;
 
       document.getElementById('result').innerHTML = `
-        Netto winst (excl. btw): €${nettoWinst.toFixed(2)}<br>
-        Marge: ${margePercent.toFixed(2)}%
+        <strong>Uitsplitsing:</strong>
+        <ul>
+          <li>Totale verkoopprijs (incl. btw): €${totaalVerkoopIncl.toFixed(2)}</li>
+          <li>BTW bedrag: €${btwBedrag.toFixed(2)}</li>
+          <li>Totale verkoopprijs (excl. btw): €${totaalVerkoopExcl.toFixed(2)}</li>
+          <li>Korting op inkoop: €${kortingBedrag.toFixed(2)}</li>
+          <li>Inkoop na korting: €${inkoopNaKorting.toFixed(2)}</li>
+          <li>Fee (over incl. btw): €${fee.toFixed(2)}</li>
+          <li>Inkoop verzendkosten: €${verzendInkoop.toFixed(2)}</li>
+          <li>Importkosten: €${importKosten.toFixed(2)}</li>
+          <li><strong>Totale kosten: €${totaleKosten.toFixed(2)}</strong></li>
+          <li><strong>Netto winst (excl. btw): €${nettoWinst.toFixed(2)}</strong></li>
+          <li><strong>Marge: ${margePercent.toFixed(2)}%</strong></li>
+        </ul>
       `;
     }
   </script>
