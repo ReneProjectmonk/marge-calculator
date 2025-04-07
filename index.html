@@ -1,0 +1,94 @@
+
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marge Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      max-width: 700px;
+      margin: auto;
+    }
+    label, input {
+      display: block;
+      margin: 0.5rem 0;
+    }
+    input {
+      width: 100%;
+      padding: 0.5rem;
+      box-sizing: border-box;
+    }
+    .result {
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    button {
+      margin-top: 1rem;
+      padding: 0.75rem;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Marge Calculator (excl. btw)</h1>
+  <p>Vul de velden in om de netto marge (excl. btw) in euro en procent te berekenen.</p>
+
+  <label for="verkoop">Verkoopprijs product (€)</label>
+  <input type="number" id="verkoop" step="0.01">
+
+  <label for="btw">BTW percentage (%)</label>
+  <input type="number" id="btw" step="0.01">
+
+  <label for="inkoop">Inkoopprijs product (€)</label>
+  <input type="number" id="inkoop" step="0.01">
+
+  <label for="verzendVerkoop">Verkoop verzendkosten (€)</label>
+  <input type="number" id="verzendVerkoop" step="0.01">
+
+  <label for="verzendInkoop">Inkoop verzendkosten (€)</label>
+  <input type="number" id="verzendInkoop" step="0.01">
+
+  <label for="importKosten">Importkosten product (€)</label>
+  <input type="number" id="importKosten" step="0.01">
+
+  <label for="fee">Fee percentage over verkoop + verzending (%)</label>
+  <input type="number" id="fee" step="0.01">
+
+  <label for="korting">Korting op inkoopprijs (%)</label>
+  <input type="number" id="korting" step="0.01">
+
+  <button onclick="berekenMarge()">Bereken Marge</button>
+
+  <div class="result" id="result"></div>
+
+  <script>
+    function berekenMarge() {
+      const verkoop = parseFloat(document.getElementById('verkoop').value);
+      const btwPerc = parseFloat(document.getElementById('btw').value);
+      const inkoop = parseFloat(document.getElementById('inkoop').value);
+      const verzendVerkoop = parseFloat(document.getElementById('verzendVerkoop').value);
+      const verzendInkoop = parseFloat(document.getElementById('verzendInkoop').value);
+      const importKosten = parseFloat(document.getElementById('importKosten').value);
+      const feePerc = parseFloat(document.getElementById('fee').value);
+      const korting = parseFloat(document.getElementById('korting').value);
+
+      const totaalVerkoopIncl = verkoop + verzendVerkoop;
+      const totaalVerkoopExcl = totaalVerkoopIncl / (1 + (btwPerc / 100));
+      const kortingBedrag = inkoop * (korting / 100);
+      const inkoopNaKorting = inkoop - kortingBedrag;
+      const fee = totaalVerkoopExcl * (feePerc / 100);
+      const totaleKosten = inkoopNaKorting + verzendInkoop + importKosten + fee;
+      const nettoWinst = totaalVerkoopExcl - totaleKosten;
+      const margePercent = (nettoWinst / totaalVerkoopExcl) * 100;
+
+      document.getElementById('result').innerHTML = `
+        Netto winst (excl. btw): €${nettoWinst.toFixed(2)}<br>
+        Marge: ${margePercent.toFixed(2)}%
+      `;
+    }
+  </script>
+</body>
+</html>
